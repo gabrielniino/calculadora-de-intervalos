@@ -21,43 +21,6 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-type FormType = {
-  funcpolinomial: string;
-};
-
-type DataSourceType = {
-  key: number;
-  func: string;
-  xValue: number;
-  fxValue: number;
-  sinal: "+" | "-";
-};
-
-type Interval = {
-  key: number;
-  a: DataSourceType;
-  b: DataSourceType;
-  label: string;
-};
-
-type IteracaoK = {
-  key: number;
-  label: string;
-  k: Interval;
-};
-
-type AppState = {
-  funcpolinomial: string;
-  xValueInitial: number;
-  dataSource: DataSourceType[];
-  intervals: Interval[];
-  selectedInterval: Interval | undefined;
-  iteracaoK: IteracaoK[];
-  epsilon: number | undefined;
-  loadingGeneretInterval: boolean;
-  loadingEpsilon: boolean;
-};
-
 function App() {
   const [form] = Form.useForm<FormType>();
   const [formInterval] = Form.useForm<FormType>();
@@ -183,7 +146,7 @@ function App() {
     debugger;
     let value = formInterval.getFieldValue("epsilon");
     value = value.replace(",", ".");
-    
+
     if (isNaN(value)) {
       messageApi.open({
         type: "error",
@@ -249,41 +212,41 @@ function App() {
         label: `k${count}`,
         k: replaceA
           ? {
+            key: kValue,
+            a: {
               key: kValue,
-              a: {
-                key: kValue,
-                func,
-                fxValue: fxAux,
-                xValue: kValue,
-                sinal: fxAux >= 0 ? "+" : "-",
-              },
-              b: {
-                key: kValue,
-                func: bFunc,
-                fxValue: bFxValue,
-                xValue: bValue,
-                sinal: bFxValue >= 0 ? "+" : "-",
-              },
-              label: "",
-            }
-          : {
-              key: kValue,
-              a: {
-                key: kValue,
-                func: aFunc,
-                fxValue: aFxValue,
-                xValue: aValue,
-                sinal: aFxValue >= 0 ? "+" : "-",
-              },
-              b: {
-                key: kValue,
-                func,
-                fxValue: fxAux,
-                xValue: kValue,
-                sinal: fxAux >= 0 ? "+" : "-",
-              },
-              label: "",
+              func,
+              fxValue: fxAux,
+              xValue: kValue,
+              sinal: fxAux >= 0 ? "+" : "-",
             },
+            b: {
+              key: kValue,
+              func: bFunc,
+              fxValue: bFxValue,
+              xValue: bValue,
+              sinal: bFxValue >= 0 ? "+" : "-",
+            },
+            label: "",
+          }
+          : {
+            key: kValue,
+            a: {
+              key: kValue,
+              func: aFunc,
+              fxValue: aFxValue,
+              xValue: aValue,
+              sinal: aFxValue >= 0 ? "+" : "-",
+            },
+            b: {
+              key: kValue,
+              func,
+              fxValue: fxAux,
+              xValue: kValue,
+              sinal: fxAux >= 0 ? "+" : "-",
+            },
+            label: "",
+          },
       });
       count++;
     }
@@ -318,8 +281,17 @@ function App() {
   return (
     <Card
       size="small"
-      title={<h2>{"Determinação de raízes de funções"}</h2>}
-      style={{ width: "800px", height: "100%" }}
+      title={<h2 style={{
+        color: "white"
+      }}>{"Calculadora de raizes da função"}</h2>}
+      style={{
+        fontFamily: "Poppins",
+        height: "100%",
+        width: "800px",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        boxShadow: "rgba(0, 0, 0, 0.4) 0px 30px 90px",
+        border: "none"
+      }}
     >
       {contextHolder}
       <Form
@@ -328,7 +300,10 @@ function App() {
         style={{ maxWidth: 600 }}
         onFinish={handleClickGerarIntervalos}
       >
-        <Form.Item
+        <Form.Item style={{
+          fontWeight: "500",
+          color: "white"
+        }}
           label="f(x)"
           name="funcpolinomial"
           rules={[
@@ -338,21 +313,44 @@ function App() {
             },
           ]}
         >
-          <Input type="text" placeholder="x^3 - 9*x + 3" />
+          <Input style={{
+            border: "none"
+          }}
+            type="text" placeholder="x^3 - 9*x + 3" />
         </Form.Item>
         <Form.Item {...tailLayout}>
           <Space wrap>
             <Button
               type="primary"
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                backgroundColor: "#F08223",
+                boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                border: "none"
+              }}
               htmlType="submit"
               loading={state.loadingGeneretInterval}
             >
               {"Gerar intervalos"}
             </Button>
-            <Button htmlType="button" onClick={handleClickLimpar}>
+            <Button style={{
+              fontWeight: "500",
+              color: "orange",
+              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+              border: "none"
+            }}
+              htmlType="button" onClick={handleClickLimpar}>
               {"Limpar"}
             </Button>
-            <Button type="link" htmlType="button" onClick={handleClickExemplo}>
+            <Button style={{
+              color: "orange",
+              fontWeight: "500",
+              backgroundColor: "white",
+              border: "1px solid white",
+              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+            }}
+              type="link" htmlType="button" onClick={handleClickExemplo}>
               {"Exemplo"}
             </Button>{" "}
           </Space>
@@ -364,12 +362,16 @@ function App() {
         style={{ maxWidth: 600 }}
         onFinish={handleClickCalcularEpsilon}
       >
-        <Form.Item
+        <Form.Item 
           labelCol={{ span: 15 }}
           wrapperCol={{ span: 4 }}
           label="Selecione o intervalo:"
           name="intervalselected"
-          style={{ display: "inline-block", width: "calc(65% - 8px)" }}
+          style={{
+            fontWeight: "500",
+            display: "inline-block",
+            width: "calc(65% - 8px)",
+          }}
           rules={[
             {
               required: true,
@@ -378,7 +380,11 @@ function App() {
           ]}
         >
           <Select
-            style={{ width: 85 }}
+            style={{
+              width: "85",
+              backgroundColor: "white",
+              borderRadius: "7px"
+            }}
             value={state.selectedInterval ? state.selectedInterval.label : null}
             disabled={!(state.intervals.length > 0)}
             options={state.intervals.map((x) => {
@@ -387,7 +393,7 @@ function App() {
                 label: x.label,
               };
             })}
-            onChange={(value) => {
+            onChange={(value: string) => {
               const optionSelected = state.intervals.find(
                 (x) => x.label === value
               );
@@ -401,7 +407,11 @@ function App() {
         <Form.Item
           label="Epsilon"
           name="epsilon"
-          style={{ display: "inline-block", width: "calc(35% - 8px)" }}
+          style={{
+            display: "inline-block",
+            width: "calc(35% - 8px)",
+            fontWeight: "500"
+          }}
           rules={[
             {
               required: true,
@@ -409,10 +419,18 @@ function App() {
             },
           ]}
         >
-          <Input disabled={!(state.intervals.length > 0)} />
+          <Input style={{
+            backgroundColor: "white"
+          }} disabled={!(state.intervals.length > 0)} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 7 }}>
-          <Button
+          <Button style={{
+            fontFamily: "Poppins",
+            fontWeight: "500",
+            backgroundColor: "#F08223",
+            boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+            border: "none"
+          }}
             type="primary"
             htmlType="submit"
             loading={state.loadingEpsilon}
@@ -426,9 +444,8 @@ function App() {
         size="small"
         title={
           state.iteracaoK.length > 0 ? (
-            <span>{`f(x) = ${state.funcpolinomial} |  f(p) ≈ 0 = ${
-              state.iteracaoK[state.iteracaoK.length - 1].key
-            }`}</span>
+            <span>{`f(x) = ${state.funcpolinomial} |  f(p) ≈ 0 = ${state.iteracaoK[state.iteracaoK.length - 1].key
+              }`}</span>
           ) : state.funcpolinomial.length > 0 ? (
             <span>{`f(x) = ${state.funcpolinomial}`}</span>
           ) : (
@@ -437,6 +454,9 @@ function App() {
         }
       >
         <Tabs
+          style={{
+            height: "510px",
+          }}
           defaultActiveKey={"1"}
           type="card"
           size="small"
@@ -445,7 +465,7 @@ function App() {
               key: "1",
               label: "Teorema de Bolzano",
               children: (
-                <Table
+                <Table 
                   size="small"
                   loading={state.loadingGeneretInterval}
                   dataSource={state.dataSource}
@@ -521,9 +541,8 @@ function App() {
                           return <span>{""}</span>;
                         }
                         return (
-                          <span>{`[${record.a.xValue ?? ""}; ${
-                            record.b.xValue ?? ""
-                          }]`}</span>
+                          <span>{`[${record.a.xValue ?? ""}; ${record.b.xValue ?? ""
+                            }]`}</span>
                         );
                       },
                     },
@@ -589,7 +608,7 @@ function App() {
           ]}
         />
       </Card>
-    </Card>
+    </Card >
   );
 }
 
